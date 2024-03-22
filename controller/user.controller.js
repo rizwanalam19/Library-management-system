@@ -1,7 +1,7 @@
 import { User } from "../models/user.models.js";
 import { ApiResponse } from "../utils/Apiresponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
-
+import { ApiError } from "../utils/ApiError.js";
 const createUser = asyncHandler(async(req, res)=>{
     const {username, password} = req.body
 
@@ -28,7 +28,9 @@ const loginUser = asyncHandler(async(req,res)=>{
 if(!user){
   throw new ApiError(400, "Username or password is incorrect")
 }
-if(user.password !== password){
+const isPasswordValid = await user.isPasswordCorrect(password);
+
+if(!(isPasswordValid)){
   throw new ApiError(400, "Username or password is incorrect")
 }
 
